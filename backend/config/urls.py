@@ -20,7 +20,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from core.views import MenuItemViewSet, OrderViewSet
+from core.views import DashboardSummaryView, MenuItemViewSet, OrderViewSet
 from core.webhook_views import receive
 
 router = DefaultRouter()
@@ -32,5 +32,6 @@ urlpatterns = [
     path("api/token/", TokenObtainPairView.as_view()),
     path("api/token/refresh/", TokenRefreshView.as_view()),
     path("api/webhooks/<str:source>/<int:tenant_id>/", receive),
+    path("api/dashboard/summary/", DashboardSummaryView.as_view()),
     path("api/", include(router.urls)),
 ]
