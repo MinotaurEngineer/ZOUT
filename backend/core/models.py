@@ -46,3 +46,26 @@ class Order(models.Model):
 
     class Meta:
         indexes = [models.Index(fields=["tenant", "created_at"])]
+
+
+class WebhookEvent(models.Model):
+    class Status(models.TextChoices):
+        RECEIVED = "received"
+        PROCESSED = "processed"
+        FAILED = "failed"
+
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="webhook_events")
+    source = models.CharField(max_length=20)  # "shop" | "carrier"
+    event_id = models.CharField(max_length=200)
+    raw_payload = models.TextField()  # the exact body that was signed
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.RECEIVED)
+    error = models.TextField(blank=True)
+    retry_count = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tenant", "source", "event_id"], name="uniq_webhook_event"
+            )
+        ]

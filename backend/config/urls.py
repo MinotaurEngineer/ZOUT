@@ -21,6 +21,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from core.views import MenuItemViewSet, OrderViewSet
+from core.webhook_views import receive
 
 router = DefaultRouter()
 router.register("menu-items", MenuItemViewSet, basename="menu-item")
@@ -30,5 +31,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/token/", TokenObtainPairView.as_view()),
     path("api/token/refresh/", TokenRefreshView.as_view()),
+    path("api/webhooks/<str:source>/<int:tenant_id>/", receive),
     path("api/", include(router.urls)),
 ]
