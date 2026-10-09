@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: sous
+      POSTGRES_USER: sous
+      POSTGRES_PASSWORD: sous
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sous"]
+      interval: 3s
+      retries: 10
+  web:
+    build: ./backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgres://sous:sous@db:5432/sous
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  pgdata:
